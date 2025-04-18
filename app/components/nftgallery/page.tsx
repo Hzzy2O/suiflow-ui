@@ -225,10 +225,24 @@ export default NFTGallery;
 `;
 
   // Usage example
-  const usageExample = `
-import { NFTGallery } from '@/components/nftgallery';
+  const example = [
+    {
+      title: 'Example.tsx',
+      code: `import { NFTGallery } from '@/components/nftgallery';
+import { createNetworkConfig, SuiClientProvider } from '@mysten/dapp-kit';
+import { getFullnodeUrl } from '@mysten/sui/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-export default function MyPage() {
+// Create a client
+const queryClient = new QueryClient();
+
+// Configure networks
+const { networkConfig } = createNetworkConfig({
+  mainnet: { url: getFullnodeUrl('mainnet') },
+  testnet: { url: getFullnodeUrl('testnet') },
+});
+
+export default function MyComponent() {
   // Demo wallet address with NFTs
   const walletAddress = "0x7d20dcdb2bca4f508ea9613994683eb4e76e9c4ed371169677c1be02aaf0b58e";
   
@@ -238,357 +252,381 @@ export default function MyPage() {
   };
 
   return (
-    <div>
-      <h1>My NFT Gallery</h1>
-      <NFTGallery 
-        walletAddress={walletAddress}
-        networkType="mainnet"
-        maxDisplay={20}
-        size="md"
-        onNFTSelect={handleNFTSelect}
-      />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
+        <div className="space-y-8">
+          <h1 className="text-2xl font-bold">My NFT Collection</h1>
+          
+          <NFTGallery 
+            walletAddress={walletAddress}
+            networkType="mainnet"
+            maxDisplay={8}
+            size="md"
+            onNFTSelect={handleNFTSelect}
+          />
+        </div>
+      </SuiClientProvider>
+    </QueryClientProvider>
   );
-}
-`;
+}`,
+    },
+  ];
 
   const propsTableData = [
     {
       name: 'walletAddress',
       type: 'string',
-      default: '-',
-      required: true,
       description: 'The wallet address to fetch NFTs from',
     },
     {
       name: 'networkType',
       type: "'mainnet' | 'testnet' | 'devnet'",
-      default: "'mainnet'",
-      required: false,
-      description: 'The Sui network to connect to',
+      description: 'The Sui network to connect to (default: "mainnet")',
     },
     {
       name: 'maxDisplay',
       type: 'number',
-      default: '50',
-      required: false,
-      description: 'Maximum number of NFTs to display',
+      description: 'Maximum number of NFTs to display (default: 50)',
     },
     {
       name: 'variant',
       type: "'default' | 'glass' | 'bordered'",
-      default: "'default'",
-      required: false,
-      description: 'Visual style variant of the gallery',
+      description: 'Visual style variant of the gallery (default: "default")',
     },
     {
       name: 'size',
       type: "'sm' | 'md' | 'lg'",
-      default: "'md'",
-      required: false,
-      description: 'Size of the NFT cards',
+      description: 'Size of the NFT cards (default: "md")',
     },
     {
       name: 'onNFTSelect',
       type: '(objectId: string) => void',
-      default: '-',
-      required: false,
       description: 'Callback function when an NFT is selected',
     },
     {
       name: 'emptyStateMessage',
       type: 'string',
-      default: "'No NFTs found in this wallet'",
-      required: false,
-      description: 'Message to display when no NFTs are found',
+      description: 'Message to display when no NFTs are found (default: "No NFTs found in this wallet")',
     },
     {
       name: 'loadingMessage',
       type: 'string',
-      default: "'Loading NFTs from wallet...'",
-      required: false,
-      description: 'Message to display during loading state',
+      description: 'Message to display during loading state (default: "Loading NFTs from wallet...")',
     },
     {
       name: 'customEmptyComponent',
       type: 'React.ReactNode',
-      default: '-',
-      required: false,
       description: 'Custom component to render when no NFTs are found',
     },
     {
       name: 'customLoadingComponent',
       type: 'React.ReactNode',
-      default: '-',
-      required: false,
       description: 'Custom component to render during loading state',
     },
     {
       name: 'customErrorComponent',
       type: 'React.ReactNode',
-      default: '-',
-      required: false,
       description: 'Custom component to render when an error occurs',
     },
   ];
 
   return (
-    <div className={`pt-8 ml-0 md:ml-6 antialiased transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
-      <div className="font-semibold mb-1 text-sm text-blue-600 dark:text-blue-400">组件</div>
-      <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">NFT Gallery</h1>
-      <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-3xl">
-        NFT Gallery 组件用于展示指定钱包地址拥有的 NFT 收藏品，支持不同网络和自定义样式。
-      </p>
-
-      <div className="flex items-center space-x-3 mb-6">
-        <button
-          onClick={() => handleTabChange('Preview')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md 
-          ${
-            activeTab === 'Preview'
-              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-          }`}
-        >
-          预览
-        </button>
-        <button
-          onClick={() => handleTabChange('Code')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md
-          ${
-            activeTab === 'Code'
-              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-          }`}
-        >
-          代码
-        </button>
-        <button
-          onClick={() => handleTabChange('Props')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md
-          ${
-            activeTab === 'Props'
-              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-          }`}
-        >
-          属性
-        </button>
-        <button
-          onClick={() => handleTabChange('Usage')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md
-          ${
-            activeTab === 'Usage'
-              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-          }`}
-        >
-          使用方法
-        </button>
-
-        <button
-          onClick={toggleDarkMode}
-          className="ml-auto p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-        >
-          {darkMode ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-              />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
-              />
-            </svg>
-          )}
-        </button>
+    <div className="bg-gradient-to-br from-[#091428] to-black/95 text-white backdrop-blur-md w-full pt-24 overflow-auto p-5">
+      <span className="text-4xl font-semibold pl-1">NFT Gallery Component</span>
+      <div>
+        <p className="sm:text-base mt-4 pl-1 text-gray-400">
+          A component for displaying NFT collections from specified wallet addresses, supporting different networks and customizable display options.
+        </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none dark:border dark:border-gray-800 mb-10">
-        <AnimatePresence mode="wait">
-          {activeTab === 'Preview' && (
-            <motion.div
-              key="preview"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="p-5"
+      <div className="flex flex-col items-start mt-10">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center space-x-4">
+            <button
+              className={`flex items-center text-white px-3 py-1 rounded-md ${
+                activeTab === 'Preview'
+                  ? 'bg-gradient-to-r from-[#0A1428] to-[#0A2440] text-[#6FBCF0] border-b-2 border-[#3890E3]'
+                  : ''
+              }`}
+              onClick={() => handleTabChange('Preview')}
             >
-              <div className={`${darkMode ? 'dark' : ''} transition-colors duration-300`}>
-                <div className="bg-white dark:bg-gray-900 min-h-[300px] rounded-xl">
-                  <SuiClientProvider
-                    networks={networkConfig}
-                    defaultNetwork="mainnet"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 mr-2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                />
+              </svg>
+              Preview
+            </button>
+            <button
+              className={`flex items-center text-white px-3 py-1 rounded-md ${
+                activeTab === 'Code'
+                  ? 'bg-gradient-to-r from-[#0A1428] to-[#0A2440] text-[#6FBCF0] border-b-2 border-[#3890E3]'
+                  : ''
+              }`}
+              onClick={() => handleTabChange('Code')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 mr-2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
+                />
+              </svg>
+              Code
+            </button>
+          </div>
+          <div className="mr-1">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center rounded-full p-2 text-white focus:outline-none"
+              onClick={toggleDarkMode}
+            >
+              <AnimatePresence mode="wait">
+                {darkMode ? (
+                  <motion.svg
+                    key="dark"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                    initial={hasMounted ? { opacity: 0, rotate: -90 } : false}
+                    animate={hasMounted ? { opacity: 1, rotate: 0 } : false}
+                    exit={{ opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.1 }}
                   >
-                    <NFTGallery
-                      walletAddress={demoWalletAddress}
-                      networkType="mainnet"
-                      maxDisplay={8}
-                      size="md"
-                      onNFTSelect={(id) => console.log('Selected NFT:', id)}
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                  </motion.svg>
+                ) : (
+                  <motion.svg
+                    key="light"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                    initial={hasMounted ? { opacity: 0, rotate: -90 } : false}
+                    animate={hasMounted ? { opacity: 1, rotate: 0 } : false}
+                    exit={{ opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.1 }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                  </motion.svg>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
+        </div>
+
+        <div className="bg-[#0A1428]/80 border rounded-lg border-[#2A3746] w-full h-auto mt-2">
+          <div>
+            {activeTab === 'Preview' && (
+              <div className="p-8 relative bg-[#0A1428] border-[#2A3746] rounded-lg" style={{
+                backgroundImage: `linear-gradient(to right, rgba(58, 145, 227, 0.07) 1px, transparent 1px), 
+                                  linear-gradient(to bottom, rgba(58, 145, 227, 0.07) 1px, transparent 1px)`,
+                backgroundSize: '10px 10px',
+              }}>
+                <QueryClientProvider client={queryClient}>
+                  <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
+                    <div className={darkMode ? "dark" : ""}>
+                      <div className="flex flex-col space-y-8">
+                        <h3 className="text-sm font-medium mb-4 text-white">Wallet NFT Gallery</h3>
+                        <div className="mb-4">
+                          <label htmlFor="walletInput" className="block text-sm font-medium text-gray-300 mb-1">
+                            Test Wallet Address
+                          </label>
+                          <div className="flex">
+                            <input
+                              id="walletInput"
+                              type="text"
+                              value={demoWalletAddress}
+                              onChange={(e) => setDemoWalletAddress(e.target.value)}
+                              className="flex-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm placeholder-gray-600 bg-gray-800 text-sm text-gray-100"
+                              placeholder="Enter wallet address to view NFTs..."
+                            />
+                          </div>
+                        </div>
+                        <NFTGallery
+                          walletAddress={demoWalletAddress}
+                          networkType="mainnet"
+                          maxDisplay={8}
+                          size="md"
+                          onNFTSelect={(id) => console.log('Selected NFT:', id)}
+                        />
+                      </div>
+                    </div>
                   </SuiClientProvider>
-                </div>
+                </QueryClientProvider>
               </div>
-              
-              <div className="mt-4">
-                <label htmlFor="walletInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  测试钱包地址
-                </label>
-                <div className="flex">
-                  <input
-                    id="walletInput"
-                    type="text"
-                    value={demoWalletAddress}
-                    onChange={(e) => setDemoWalletAddress(e.target.value)}
-                    className="flex-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100"
-                    placeholder="输入钱包地址查看 NFT..."
+            )}
+            {activeTab === 'Code' && (
+              <div>
+                <SuiFlowSourceCodeBlock
+                  codeString={sourceCode}
+                  language="javascript"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-20 py-3 text-xl font-semibold">
+          <div className="flex items-center">
+            <div className="mr-2 sm:pl-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5 text-[#6FBCF0]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+            </div>
+            Installation
+          </div>
+        </div>
+
+        <div>
+          <div className="absolute sm:ml-3">
+            <pre className="bg-[#0A1428] p-3 rounded-md overflow-auto text-sm sm:text-base w-[350px] sm:w-[600px] border border-[#2A3746]">
+              <code className="text-zinc-300">
+                npx @suiflow-ui@latest add nftgallery
+              </code>
+            </pre>
+            <button
+              onClick={() =>
+                copyToClipboard('npx @suiflow-ui@latest add nftgallery', 1)
+              }
+              className="absolute right-0 top-2 p-2 w-10 h-auto bg-[#0A1428] rounded border-r border-[#2A3746]"
+              aria-label="Copy command"
+            >
+              {copiedStep === 1 ? (
+                <motion.svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="#4ADE80"
+                  className="w-4 h-4"
+                  initial={{ scale: 0, opacity: 1 }}
+                  animate={{ scale: [0, 1.1, 1], opacity: [1, 1, 1] }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m4.5 12.75 6 6 9-13.5"
                   />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'Code' && (
-            <motion.div
-              key="code"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <SuiFlowSourceCodeBlock codeString={sourceCode} language="javascript" />
-            </motion.div>
-          )}
-
-          {activeTab === 'Props' && (
-            <motion.div
-              key="props"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="p-5"
-            >
-              <PropsTable propsData={propsTableData.map(item => ({
-                name: item.name,
-                type: item.type,
-                description: item.description
-              }))} />
-            </motion.div>
-          )}
-
-          {activeTab === 'Usage' && (
-            <motion.div
-              key="usage"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <SuiFlowExampleBlock files={[{ title: 'Example.tsx', code: usageExample }]} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      <div className="mt-10 mb-20">
-        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">快速指南</h2>
-        
-        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none dark:border dark:border-gray-800 p-6 mb-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 h-8 w-8 rounded-full flex items-center justify-center mr-3">
-              <span className="font-medium">1</span>
-            </div>
-            <h3 className="font-medium text-gray-900 dark:text-white">安装依赖</h3>
-            
-            {copiedStep === 1 && (
-              <span className="ml-auto text-sm text-green-600 dark:text-green-400">已复制 ✓</span>
-            )}
+                </motion.svg>
+              ) : (
+                <span className="relative -top-1 -left-1">
+                  <svg
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 6.75H7.75C6.64543 6.75 5.75 7.64543 5.75 8.75V17.25C5.75 18.3546 6.64543 19.25 7.75 19.25H16.25C17.3546 19.25 18.25 18.3546 18.25 17.25V8.75C18.25 7.64543 17.3546 6.75 16.25 6.75H15"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    ></path>
+                    <path
+                      d="M14 8.25H10C9.44772 8.25 9 7.80228 9 7.25V5.75C9 5.19772 9.44772 4.75 10 4.75H14C14.5523 4.75 15 5.19772 15 5.75V7.25C15 7.80228 14.5523 8.25 14 8.25Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    ></path>
+                    <path
+                      d="M9.75 12.25H14.25"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    ></path>
+                    <path
+                      d="M9.75 15.25H14.25"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                    ></path>
+                  </svg>
+                </span>
+              )}
+            </button>
           </div>
-          
-          <div className="ml-11">
-            <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-              安装必要的 Sui 依赖
-            </p>
-            <div 
-              className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-sm font-mono text-gray-800 dark:text-gray-200 mb-2 cursor-pointer"
-              onClick={() => copyToClipboard("npm install @mysten/sui@latest", 1)}
-            >
-              npm install @mysten/sui@latest
+
+          <div className="flex items-center mt-28 py-3 sm:pl-4 text-xl font-semibold">
+            <div className="mr-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5 text-[#6FBCF0]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.063 16.658.26-1.477m2.605-14.772.26-1.477m0 17.726-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205 12 12m6.894 5.785-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"
+                />
+              </svg>
             </div>
+            Usage
           </div>
         </div>
-        
-        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none dark:border dark:border-gray-800 p-6 mb-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 h-8 w-8 rounded-full flex items-center justify-center mr-3">
-              <span className="font-medium">2</span>
-            </div>
-            <h3 className="font-medium text-gray-900 dark:text-white">导入组件</h3>
-            
-            {copiedStep === 2 && (
-              <span className="ml-auto text-sm text-green-600 dark:text-green-400">已复制 ✓</span>
-            )}
-          </div>
-          
-          <div className="ml-11">
-            <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-              从组件库中导入 NFTGallery 组件
-            </p>
-            <div 
-              className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-sm font-mono text-gray-800 dark:text-gray-200 mb-2 cursor-pointer"
-              onClick={() => copyToClipboard("import { NFTGallery } from '@/components/nftgallery';", 2)}
+
+        <SuiFlowExampleBlock files={example} />
+
+        <div className="container mx-auto p-1 sm:p-4 mt-20">
+          <div className="flex items-center mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-5 text-[#6FBCF0]"
             >
-              {'import { NFTGallery } from \'@/components/nftgallery\';'}
-            </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+              />
+            </svg>
+            <h1 className="text-xl font-semibold ml-2">Props</h1>
           </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none dark:border dark:border-gray-800 p-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 h-8 w-8 rounded-full flex items-center justify-center mr-3">
-              <span className="font-medium">3</span>
-            </div>
-            <h3 className="font-medium text-gray-900 dark:text-white">使用组件</h3>
-            
-            {copiedStep === 3 && (
-              <span className="ml-auto text-sm text-green-600 dark:text-green-400">已复制 ✓</span>
-            )}
-          </div>
-          
-          <div className="ml-11">
-            <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-              在你的页面中使用 NFTGallery 组件
-            </p>
-            <div 
-              className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-sm font-mono text-gray-800 dark:text-gray-200 cursor-pointer"
-              onClick={() => copyToClipboard("<NFTGallery\n  walletAddress=\"0x7d20dcdb2bca4f508ea9613994683eb4e76e9c4ed371169677c1be02aaf0b58e\"\n  networkType=\"mainnet\"\n  maxDisplay={20}\n  size=\"md\"\n  onNFTSelect={(id) => console.log('Selected NFT:', id)}\n/>", 3)}
-            >
-              {'<NFTGallery\n  walletAddress="0x7d20dcdb2bca4f508ea9613994683eb4e76e9c4ed371169677c1be02aaf0b58e"\n  networkType="mainnet"\n  maxDisplay={20}\n  size="md"\n  onNFTSelect={(id) => console.log(\'Selected NFT:\', id)}\n/>'}
-            </div>
-          </div>
+          <PropsTable propsData={propsTableData} />
         </div>
       </div>
     </div>

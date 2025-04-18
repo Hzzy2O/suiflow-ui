@@ -1,13 +1,37 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import SuiFlowSourceCodeBlock from '@/components/suiflow/SuiFlowSourceCodeBlock';
-import SuiFlowExampleBlock from '@/components/suiflow/SuiFlowExampleBlock';
-import PropsTable from '@/components/suiflow/Table';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AddressDisplay } from '.';
+import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { createNetworkConfig, SuiClientProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Dynamically import components to reduce initial bundle size
+const SuiFlowSourceCodeBlock = dynamic(() => import('@/components/suiflow/SuiFlowSourceCodeBlock'), {
+  loading: () => <div className="animate-pulse bg-zinc-800/50 h-96 rounded-md"></div>,
+  ssr: false
+});
+
+const SuiFlowExampleBlock = dynamic(() => import('@/components/suiflow/SuiFlowExampleBlock'), {
+  loading: () => <div className="animate-pulse bg-zinc-800/50 h-64 rounded-md"></div>,
+  ssr: false
+});
+
+const PropsTable = dynamic(() => import('@/components/suiflow/Table'), {
+  loading: () => <div className="animate-pulse bg-zinc-800/50 h-64 rounded-md"></div>,
+  ssr: false
+});
+
+// Lazy load the AddressDisplay component for better performance
+const AddressDisplay = dynamic(() => import('./').then(mod => mod.AddressDisplay), {
+  loading: () => (
+    <div className="inline-flex items-center rounded-md gap-2 bg-gray-100 dark:bg-gray-800 px-3 shadow-sm h-8 animate-pulse">
+      <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+      <div className="w-32 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+    </div>
+  ),
+  ssr: false
+});
 
 // Config options for the networks you want to connect to
 const { networkConfig } = createNetworkConfig({
@@ -18,6 +42,25 @@ const { networkConfig } = createNetworkConfig({
 
 // Create a client
 const queryClient = new QueryClient();
+
+// Lazy load address sample components
+const AddressSample = dynamic(() => 
+  Promise.resolve(({
+    address, 
+    title, 
+    props = {}
+  }: {
+    address: string,
+    title: string,
+    props?: any
+  }) => (
+    <div>
+      <h3 className="text-sm font-medium mb-2 text-white">{title}</h3>
+      <AddressDisplay address={address} {...props} />
+    </div>
+  )), 
+  { ssr: false }
+);
 
 export default function AddressDisplayPage() {
   const [activeTab, setActiveTab] = useState('Preview');
@@ -67,7 +110,11 @@ export default function AddressDisplayPage() {
     }
   };
 
-  // Source code
+  // Sample addresses for demonstration
+  const myWalletAddress = '0x4a526543bb0d4d45382d3dc92034d3a270977ce0f7839a8abe9952249e9919ea';
+  const contractAddress = '0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85';
+
+  // Source code and examples
   const sourceCode = `
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -589,80 +636,76 @@ export default function MyComponent() {
                 <QueryClientProvider client={queryClient}>
                   <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
                     <div className={darkMode ? "dark" : ""}>
-                      <div className="flex flex-col gap-6">
-                        {/* Basic usage with default settings (short variant) */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Default Layout (Short Display)</h3>
-                          <AddressDisplay address="0x4a526543bb0d4d45382d3dc92034d3a270977ce0f7839a8abe9952249e9919ea" />
+                      <Suspense fallback={
+                        <div className="flex flex-col gap-6 animate-pulse">
+                          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                            <div key={i} className="flex flex-col gap-2">
+                              <div className="h-5 w-48 bg-gray-700/30 rounded"></div>
+                              <div className="h-8 w-64 bg-gray-700/50 rounded-md"></div>
+                            </div>
+                          ))}
                         </div>
-                        
-                        {/* Medium variant */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Medium Text Display</h3>
-                          <AddressDisplay 
-                            address="0x4a526543bb0d4d45382d3dc92034d3a270977ce0f7839a8abe9952249e9919ea" 
-                            textDisplayMode="medium" 
+                      }>
+                        <div className="flex flex-col gap-6">
+                          <AddressSample 
+                            title="Default Layout (Short Display)"
+                            address={myWalletAddress}
+                          />
+                          
+                          <AddressSample 
+                            title="Medium Text Display"
+                            address={myWalletAddress}
+                            props={{ textDisplayMode: "medium" }}
+                          />
+                          
+                          <AddressSample 
+                            title="Full Text Display"
+                            address={myWalletAddress}
+                            props={{ 
+                              textDisplayMode: "full",
+                              className: "max-w-full overflow-x-auto" 
+                            }}
+                          />
+                          
+                          <AddressSample 
+                            title="Compact Layout"
+                            address={contractAddress}
+                            props={{ variant: "compact" }}
+                          />
+                          
+                          <AddressSample 
+                            title="Without Avatar"
+                            address={contractAddress}
+                            props={{ showAvatar: false }}
+                          />
+                          
+                          <AddressSample 
+                            title="Rounded Square Avatar"
+                            address={contractAddress}
+                            props={{ avatarShape: "rounded-square" }}
+                          />
+                          
+                          <AddressSample 
+                            title="Clickable (with handler)"
+                            address={contractAddress}
+                            props={{ 
+                              onClick: () => alert('Address clicked: ' + contractAddress)
+                            }}
                           />
                         </div>
-                        
-                        {/* Full address variant */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Full Text Display</h3>
-                          <AddressDisplay 
-                            address="0x4a526543bb0d4d45382d3dc92034d3a270977ce0f7839a8abe9952249e9919ea" 
-                            textDisplayMode="full" 
-                            className="max-w-full overflow-x-auto"
-                          />
-                        </div>
-                        
-                        {/* Compact variant */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Compact Layout</h3>
-                          <AddressDisplay 
-                            address="0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85"
-                            variant="compact" 
-                          />
-                        </div>
-                        
-                        {/* With Avatar disabled */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Without Avatar</h3>
-                          <AddressDisplay 
-                            address="0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85"
-                            showAvatar={false}
-                          />
-                        </div>
-                        
-                        {/* Rounded square avatar */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Rounded Square Avatar</h3>
-                          <AddressDisplay 
-                            address="0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85"
-                            avatarShape="rounded-square" 
-                          />
-                        </div>
-                        
-                        {/* Custom on click handler */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-2 text-white">Clickable (with handler)</h3>
-                          <AddressDisplay 
-                            address="0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85"
-                            onClick={() => alert('Address clicked: 0x5f142b447a7765ec69cadd7c2bdf25d639eb337ef4fdb4addd8900e4dc487a85')} 
-                          />
-                        </div>
-                      </div>
+                      </Suspense>
                     </div>
                   </SuiClientProvider>
                 </QueryClientProvider>
               </div>
             )}
             {activeTab === 'Code' && (
-              <div>
+              <Suspense fallback={<div className="h-96 w-full bg-gray-800/40 animate-pulse rounded-md"></div>}>
                 <SuiFlowSourceCodeBlock
                   codeString={sourceCode}
                   language="javascript"
                 />
-              </div>
+              </Suspense>
             )}
           </div>
         </div>
@@ -785,7 +828,9 @@ export default function MyComponent() {
           </div>
         </div>
 
-        <SuiFlowExampleBlock files={example} />
+        <Suspense fallback={<div className="h-64 w-full bg-gray-800/40 animate-pulse rounded-md mt-4"></div>}>
+          <SuiFlowExampleBlock files={example} />
+        </Suspense>
 
         <div className="container mx-auto p-1 sm:p-4 mt-20">
           <div className="flex items-center mb-3">
@@ -805,7 +850,9 @@ export default function MyComponent() {
             </svg>
             <h1 className="text-xl font-semibold ml-2">Props</h1>
           </div>
-          <PropsTable propsData={propsData} />
+          <Suspense fallback={<div className="h-96 w-full bg-gray-800/40 animate-pulse rounded-md"></div>}>
+            <PropsTable propsData={propsData} />
+          </Suspense>
         </div>
       </div>
     </div>
