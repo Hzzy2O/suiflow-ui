@@ -1,0 +1,122 @@
+/* Sui Theme Colors */
+:root {
+  --sui-blue: #6FBCF0;
+  --sui-blue-light: #A7D8F7;
+  --sui-blue-dark: #4A90E2;
+  --sui-bg-dark: #0D1117;
+}
+
+/* Loader Animation */
+.sui-loader {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  animation: sui-spin 1.5s ease-in-out infinite;
+}
+
+.sui-loader:after {
+  content: '';
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: var(--sui-blue);
+  filter: drop-shadow(0 0 8px var(--sui-blue));
+  animation: sui-pulse 2s ease-in-out infinite;
+}
+
+.sui-loader:before {
+  content: '';
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-left-color: var(--sui-blue-light);
+  filter: drop-shadow(0 0 8px var(--sui-blue-light));
+  animation: sui-spin-reverse 1s ease-in-out infinite;
+}
+
+@keyframes sui-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes sui-spin-reverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sui-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.95); }
+}
+
+/* Button Effects */
+.sui-button {
+  position: relative;
+  overflow: hidden;
+  background: var(--sui-blue);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 0 0 rgba(111, 188, 240, 0.2);
+}
+
+.sui-button:hover {
+  background: var(--sui-blue-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(111, 188, 240, 0.4);
+}
+
+.sui-button:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(167, 216, 247, 0.4) 0%, rgba(111, 188, 240, 0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sui-button:hover:before {
+  transform: translate(-50%, -50%) scale(1);
+  animation: sui-button-glow 2s ease-in-out infinite;
+}
+
+.sui-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(111, 188, 240, 0.3);
+}
+
+@keyframes sui-button-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+/* Glass Effect */
+.sui-glass {
+  background: rgba(111, 188, 240, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(111, 188, 240, 0.1);
+  border-radius: 1rem;
+  box-shadow: 
+    0 4px 24px -1px rgba(111, 188, 240, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.sui-glass:hover {
+  background: rgba(111, 188, 240, 0.08);
+  border-color: rgba(111, 188, 240, 0.2);
+  box-shadow: 
+    0 8px 32px -1px rgba(111, 188, 240, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+} 

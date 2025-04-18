@@ -1,0 +1,51 @@
+/* SuiFlow UI Theme Colors */
+:root {
+  /* Color Palette */
+  --suiflow-blue: #3890E3;
+  --suiflow-light-gray: #F2F2F2;
+  --suiflow-gray: #E5E7EB;
+  --suiflow-teal: #40BFCF;
+  --suiflow-dark-blue: #091428;
+  --suiflow-black: #000000;
+  
+  /* Gradients */
+  --suiflow-blue-gradient: linear-gradient(to bottom, #3890E3, #40BFCF);
+  --suiflow-dark-gradient: linear-gradient(to bottom right, #091428, rgba(0, 0, 0, 0.95));
+}
+
+/* Typography Classes */
+.suiflow-heading {
+  font-weight: 700;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to bottom, #FFFFFF, #3890E3);
+}
+
+.suiflow-component-label {
+  font-weight: 500;
+  color: var(--suiflow-gray);
+}
+
+/* Button Styles */
+.suiflow-button {
+  background-color: var(--suiflow-blue);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.suiflow-button:hover {
+  background-color: #4A90E2;
+  box-shadow: 0 4px 12px rgba(56, 144, 227, 0.3);
+}
+
+/* Card Styles */
+.suiflow-card {
+  background: rgba(9, 20, 40, 0.8);
+  border: 1px solid rgba(56, 144, 227, 0.2);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
