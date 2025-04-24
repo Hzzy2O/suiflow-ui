@@ -105,6 +105,11 @@ const pages = [
     title: "Transaction Notifier", 
     url: "/components/transaction-notifier", 
     icon: <CgComponents /> 
+  },
+  { 
+    title: "Connect Wallet", 
+    url: "/components/connect-wallet", 
+    icon: <CgComponents /> 
   }
 ];
 

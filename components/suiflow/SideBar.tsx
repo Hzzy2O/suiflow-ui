@@ -10,6 +10,8 @@ import { GeistSans } from 'geist/font/sans';
 const componentsList = [
   { name: 'Address Display', url: '/components/addressdisplay', subComponents: [] },
   { name: 'Balance Display', url: '/components/balancedisplay', subComponents: [] },
+  { name: 'Connect Button', url: '/components/connect-button', subComponents: [] },
+  { name: 'Connect Modal', url: '/components/connect-modal', subComponents: [] },
   { name: 'NFT Card', url: '/components/nftcard', subComponents: [] },
   { name: 'NFT Gallery', url: '/components/nftgallery', subComponents: [] },
   { name: 'Object Display', url: '/components/objectdisplay', subComponents: [] },
