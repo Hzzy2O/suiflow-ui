@@ -1,5 +1,5 @@
 import React from 'react';
-import { WalletProvider, WalletConnector, useWallet } from '../';
+import { WalletProvider, WalletConnector, useWallet } from '..';
 
 // WalletStatus组件展示当前钱包状态
 const WalletStatus = () => {

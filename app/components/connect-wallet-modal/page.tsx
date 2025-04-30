@@ -1,12 +1,28 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ConnectWalletModal } from '@/app/components/connect-modal';
+import { ConnectWalletModal } from '@/app/components/connect-wallet-modal';
 import SuiFlowSourceCodeBlock from '@/components/suiflow/SuiFlowSourceCodeBlock';
 import SuiFlowExampleBlock from '@/components/suiflow/SuiFlowExampleBlock';
 import PropsTable from '@/components/suiflow/Table';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
+import {
+  createNetworkConfig,
+  SuiClientProvider,
+  WalletProvider,
+} from '@mysten/dapp-kit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { getFullnodeUrl } from '@mysten/sui/client';
+
+const { networkConfig } = createNetworkConfig({
+  mainnet: { url: getFullnodeUrl('mainnet') },
+  testnet: { url: getFullnodeUrl('testnet') },
+  devnet: { url: getFullnodeUrl('devnet') },
+});
+
+// Create a client
+const queryClient = new QueryClient();
 
 export default function ConnectModalPage() {
   const [activeTab, setActiveTab] = useState('Preview');
@@ -58,8 +74,10 @@ export default function ConnectModalPage() {
   };
 
   const handleConnect = (walletType: string) => {
-    // Simulate wallet connection
-    console.log(`Connected to ${walletType}`);
+    // Implement actual wallet connection using the walletType
+    console.log(`Connecting to ${walletType} wallet (not simulated)`);
+    // The actual connection is handled inside the ConnectWalletModal component
+    // This function is just a callback after successful connection
     setIsModalOpen(false);
   };
 
@@ -239,7 +257,7 @@ export default ConnectWalletModal;`;
   const example = [
     {
       title: 'Example.tsx',
-      code: `import { ConnectWalletModal } from '@/app/components/connect-modal';
+      code: `import { ConnectWalletModal } from '@/app/components/connect-wallet-modal';
 import { useState } from 'react';
 
 export default function App() {
@@ -289,7 +307,8 @@ export default function App() {
     {
       name: 'onConnect',
       type: '(walletType: string) => void',
-      description: 'Callback function called when a wallet is selected, with the wallet ID as parameter.',
+      description:
+        'Callback function called when a wallet is selected, with the wallet ID as parameter.',
     },
     {
       name: 'className',
@@ -303,7 +322,8 @@ export default function App() {
       <span className="text-4xl font-semibold pl-1">Connect Wallet Modal</span>
       <div>
         <p className="sm:text-base mt-4 pl-1 text-gray-400">
-          A core Web3 component for SuiFlow UI that displays available wallet options and allows users to select a wallet to connect.
+          A core Web3 component for SuiFlow UI that displays available wallet
+          options and allows users to select a wallet to connect.
         </p>
       </div>
 
@@ -380,7 +400,11 @@ export default function App() {
                     exit={{ opacity: 0, rotate: 90 }}
                     transition={{ duration: 0.1 }}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+                    />
                   </motion.svg>
                 ) : (
                   <motion.svg
@@ -396,7 +420,11 @@ export default function App() {
                     exit={{ opacity: 0, rotate: 90 }}
                     transition={{ duration: 0.1 }}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                    />
                   </motion.svg>
                 )}
               </AnimatePresence>
@@ -407,15 +435,23 @@ export default function App() {
         <div className="bg-[#0A1428]/80 border rounded-lg border-[#2A3746] w-full h-auto mt-2">
           <div>
             {activeTab === 'Preview' && (
-              <div className="p-8 relative bg-[#0A1428] border-[#2A3746] rounded-lg" style={{
-                backgroundImage: `linear-gradient(to right, rgba(58, 145, 227, 0.07) 1px, transparent 1px), 
+              <div
+                className="p-8 relative bg-[#0A1428] border-[#2A3746] rounded-lg"
+                style={{
+                  backgroundImage: `linear-gradient(to right, rgba(58, 145, 227, 0.07) 1px, transparent 1px), 
                                   linear-gradient(to bottom, rgba(58, 145, 227, 0.07) 1px, transparent 1px)`,
-                backgroundSize: '10px 10px',
-              }}>
-                <div className={darkMode ? "dark" : ""}>
+                  backgroundSize: '10px 10px',
+                }}
+              >
+                <div className={darkMode ? 'dark' : ''}>
                   <div className="flex flex-col items-center justify-center">
-                    <h3 className="text-sm font-medium mb-4 text-white">Wallet Connection Modal</h3>
-                    <p className="text-gray-400 text-sm mb-4">The modal will be rendered at the document body level for true fullscreen centering</p>
+                    <h3 className="text-sm font-medium mb-4 text-gray-900 dark:text-white">
+                      Wallet Connection Modal
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      The modal will be rendered at the document body level for
+                      true fullscreen centering
+                    </p>
                     <button
                       className="bg-[#3890E3] text-white px-4 py-2 rounded-md hover:bg-[#4A90E2] transition-colors"
                       onClick={() => setIsModalOpen(true)}
@@ -559,11 +595,21 @@ export default function App() {
         <SuiFlowExampleBlock files={example} />
 
         {/* Modal rendered outside the card container for true fullscreen centering */}
-        <ConnectWalletModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConnect={handleConnect}
-        />
+        <QueryClientProvider client={queryClient}>
+          <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
+            <WalletProvider
+              slushWallet={{
+                name: 'suiflow-ui',
+              }}
+            >
+              <ConnectWalletModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                themeMode={darkMode ? 'dark' : 'light'}
+              />
+            </WalletProvider>
+          </SuiClientProvider>
+        </QueryClientProvider>
 
         <div className="container mx-auto p-1 sm:p-4 mt-20">
           <div className="flex items-center mb-3">
@@ -588,4 +634,4 @@ export default function App() {
       </div>
     </div>
   );
-} 
+}

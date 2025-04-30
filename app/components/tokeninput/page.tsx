@@ -5,10 +5,14 @@ import SuiFlowExampleBlock from '@/components/suiflow/SuiFlowExampleBlock';
 import PropsTable from '@/components/suiflow/Table';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TokenInput } from '.';
-import { createNetworkConfig, SuiClientProvider } from '@mysten/dapp-kit';
+import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CoinsIcon } from 'lucide-react';
+import { SUI_TYPE_ARG } from '@mysten/sui/utils';
+
+// Create a client
+const queryClient = new QueryClient();
 
 // Config options for the networks you want to connect to
 const { networkConfig } = createNetworkConfig({
@@ -17,9 +21,6 @@ const { networkConfig } = createNetworkConfig({
   devnet: { url: getFullnodeUrl('devnet') },
 });
 
-// Create a client
-const queryClient = new QueryClient();
-
 export default function TokenInputPage() {
   const [activeTab, setActiveTab] = useState('Preview');
   const [darkMode, setDarkMode] = useState(false);
@@ -27,10 +28,45 @@ export default function TokenInputPage() {
   const [copiedStep, setCopiedStep] = useState<number | null>(null);
   
   // State for token input examples
-  const [inputValue1, setInputValue1] = useState('');
   const [inputValue2, setInputValue2] = useState('');
-  const [inputValue3, setInputValue3] = useState('');
   const [inputValue4, setInputValue4] = useState('');
+  
+  // Example token addresses on Sui
+  const tokenAddresses = [
+    SUI_TYPE_ARG, // Native SUI token
+    '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL',
+    '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS',
+  ];
+
+  // Example pre-defined token data (instead of fetching from blockchain)
+  const predefinedTokens = [
+    {
+      address: '0x2::sui::SUI',
+      symbol: 'SUI',
+      name: 'Sui',
+      decimals: 9,
+      iconUrl: 'https://strapi-dev.scand.app/uploads/sui_c07df05f00.png',
+      balance: '2500.75'
+    },
+    {
+      address: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      decimals: 8,
+      iconUrl: 'https://strapi-dev.scand.app/uploads/usdc_019d7ef24b.png',
+      balance: '0.05'
+    },
+    {
+      address: '0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN',
+      symbol: 'USDT',
+      name: 'Tether USD',
+      decimals: 6,
+      iconUrl: 'https://strapi-dev.scand.app/uploads/usdt_15663b1a77.png',
+      balance: '1000.00'
+    }
+  ];
+
+  const [selectedPredefinedToken, setSelectedPredefinedToken] = useState(predefinedTokens[0]);
 
   useEffect(() => {
     setHasMounted(true);
@@ -74,11 +110,31 @@ export default function TokenInputPage() {
     }
   };
 
-  // Source code
-  const sourceCode = `
-import React, { useState } from 'react';
+  const handleTokenSelect = (tokenAddress: string, tokenInfo: any) => {
+    console.log('Selected token:', tokenInfo.symbol);
+  };
+
+  const handlePredefinedTokenSelect = (tokenAddress: string, tokenInfo: any) => {
+    console.log('Selected predefined token:', tokenInfo.symbol);
+    setSelectedPredefinedToken(tokenInfo);
+  };
+
+  // Source code section showing balance and options in the same row
+  const sourceCode = `import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { MaximizeIcon } from 'lucide-react';
+import { MaximizeIcon, ChevronDown, Check, RefreshCw } from 'lucide-react';
+import { useSuiClient, useCurrentAccount } from '@mysten/dapp-kit';
+import { SUI_TYPE_ARG } from '@mysten/sui/utils';
+import { SuiClient } from '@mysten/sui/client';
+
+export interface TokenInfo {
+  address: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  iconUrl?: string;
+  balance?: string;
+}
 
 export interface TokenInputProps {
   // Basic properties
@@ -104,212 +160,174 @@ export interface TokenInputProps {
   // Style properties
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  inputClassName?: string;
   
-  // Interaction properties
-  onMaxClick?: () => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
+  // Token selection properties
+  tokenAddresses?: string[];
+  tokens?: TokenInfo[];  // Predefined token data
+  selectedTokenAddress?: string;
+  onTokenSelect?: (tokenAddress: string, tokenInfo: TokenInfo) => void;
+  showTokenSelector?: boolean;
+  
+  // Helper features
+  percentageOptions?: number[]; // Array of percentage values (e.g., [25, 50, 75, 100])
+  fixedAmountOptions?: string[]; // Array of fixed amount values (e.g., ["10", "100", "1000"])
+  showRefreshButton?: boolean;
+  onRefreshBalance?: () => Promise<void> | void;
 }
 
-const TokenInput = ({
-  // Basic properties
-  value,
-  onChange,
+const TokenInput = (props: TokenInputProps) => {
+  const {
+    value,
+    onChange,
+    tokenSymbol,
+    balance,
+    balanceLabel = 'Balance',
+    showBalance = true,
+    showMaxButton = true,
+    showTokenSelector = false,
+    percentageOptions,
+    fixedAmountOptions,
+    showRefreshButton = false,
+    onRefreshBalance
+  } = props;
   
-  // Token properties
-  tokenSymbol,
-  tokenDecimals = 9,
-  tokenIcon,
+  const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<TokenInfo | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Balance properties
-  balance,
-  balanceLabel = 'Balance',
-  showBalance = true,
-  
-  // Display options
-  showMaxButton = true,
-  placeholder = '0.0',
-  disabled = false,
-  error,
-  
-  // Style properties
-  size = 'md',
-  className,
-  inputClassName,
-  
-  // Interaction properties
-  onMaxClick,
-  onFocus,
-  onBlur,
-}: TokenInputProps) => {
-  // State for the input
-  const [isFocused, setIsFocused] = useState(false);
-  
-  // Size mappings
-  const sizeClasses = {
-    sm: 'text-xs h-10',
-    md: 'text-sm h-12',
-    lg: 'text-base h-14',
-  };
-  
-  // Input size mappings
-  const inputSizeClasses = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
-  };
-  
-  // Ensure value is valid number
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    
-    // Allow empty string
-    if (inputValue === '') {
-      onChange('');
-      return;
-    }
-    
-    // Only allow valid number inputs with decimals
-    const regex = new RegExp(\`^\\d*(\\.\\d{0,\${tokenDecimals}})?$\`);
-    if (regex.test(inputValue)) {
-      onChange(inputValue);
-    }
-  };
-  
-  // Handle MAX button click
-  const handleMaxClick = () => {
-    if (disabled) return;
-    
-    if (onMaxClick) {
-      onMaxClick();
-      return;
-    }
-    
+  // Simplified sample functions
+  const handlePercentageClick = (percentage: number) => {
     if (balance) {
-      onChange(balance);
+      const numericBalance = parseFloat(balance);
+      const percentageValue = (numericBalance * percentage / 100).toString();
+      onChange(percentageValue);
     }
   };
   
-  // Handle focus
-  const handleFocus = () => {
-    setIsFocused(true);
-    if (onFocus) onFocus();
+  const handleFixedAmountClick = (amount: string) => {
+    onChange(amount);
   };
   
-  // Handle blur
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (onBlur) onBlur();
-  };
-  
-  // Format balance for display
-  const formatBalance = (bal: string) => {
-    if (!bal) return '0';
+  const handleRefreshBalance = async () => {
+    if (isRefreshing) return;
     
-    // Try to parse as number
-    const numBal = parseFloat(bal);
-    if (isNaN(numBal)) return bal;
-    
-    // Format with appropriate decimal places
-    if (numBal > 1000000) {
-      return \`\${(numBal / 1000000).toFixed(2)}M\`;
-    } else if (numBal > 1000) {
-      return \`\${(numBal / 1000).toFixed(2)}K\`;
-    } else {
-      // Display full balance with up to tokenDecimals places
-      const parts = bal.split('.');
-      if (parts.length === 1) return bal;
-      
-      // Trim trailing zeros
-      const decimalPart = parts[1].replace(/0+$/, '');
-      if (decimalPart === '') return parts[0];
-      
-      return \`\${parts[0]}.\${decimalPart}\`;
+    setIsRefreshing(true);
+    try {
+      if (onRefreshBalance) {
+        await onRefreshBalance();
+      }
+    } finally {
+      setIsRefreshing(false);
     }
+  };
+  
+  // For display purposes
+  const getCurrentSymbol = () => {
+    if (selectedToken) {
+      return selectedToken.symbol;
+    }
+    return tokenSymbol || '';
+  };
+  
+  const getTokenIcon = () => {
+    if (selectedToken?.iconUrl) {
+      return <img src={selectedToken.iconUrl} alt={selectedToken.symbol} className="w-6 h-6 rounded-full" />;
+    }
+    return null;
   };
   
   return (
-    <div className={cn('w-full', className)}>
-      {/* Top row with balance info */}
+    <div className="w-full">
+      {/* Top row with balance info and options */}
       {showBalance && (
-        <div className="flex justify-end mb-1">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {balanceLabel}: {formatBalance(balance || '0')} {tokenSymbol}
-          </span>
+        <div className="flex justify-between items-center mb-1.5 flex-wrap gap-y-1">
+          {/* Balance on the left */}
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              {balanceLabel}: {balance || selectedToken?.balance || '0'} {getCurrentSymbol()}
+            </span>
+            
+            {/* Refresh balance button */}
+            {showRefreshButton && (
+              <button
+                onClick={handleRefreshBalance}
+                className="ml-1.5 p-0.5 rounded-full text-gray-400 hover:text-gray-600"
+              >
+                <RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />
+              </button>
+            )}
+          </div>
+          
+          {/* Options stacked on the right */}
+          <div className="flex flex-col items-end gap-1">
+            {/* Percentage options on one row */}
+            {percentageOptions && percentageOptions.length > 0 && (
+              <div className="flex flex-wrap gap-1 justify-end">
+                {percentageOptions.map((percentage) => (
+                  <button
+                    key={\`percent-\${percentage}\`}
+                    onClick={() => handlePercentageClick(percentage)}
+                    className="px-1.5 py-0.5 text-xs rounded bg-gray-100 dark:bg-gray-800"
+                  >
+                    {percentage}%
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Fixed amount options on another row */}
+            {fixedAmountOptions && fixedAmountOptions.length > 0 && (
+              <div className="flex flex-wrap gap-1 justify-end">
+                {fixedAmountOptions.map((amount) => (
+                  <button
+                    key={\`amount-\${amount}\`}
+                    onClick={() => handleFixedAmountClick(amount)}
+                    className="px-1.5 py-0.5 text-xs rounded bg-gray-100 dark:bg-gray-800"
+                  >
+                    {amount}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
       
-      {/* Main input container */}
-      <div
-        className={cn(
-          'flex items-center w-full rounded-md border px-3 bg-white dark:bg-gray-800',
-          sizeClasses[size],
-          isFocused && 'ring-2 ring-offset-1 ring-blue-500',
-          error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600',
-          disabled && 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-900',
-          'transition-all duration-200'
-        )}
-      >
-        {/* Token icon if provided */}
-        {tokenIcon && (
-          <div className="mr-2 flex-shrink-0">
-            {tokenIcon}
-          </div>
+      {/* Main input field and token selector */}
+      <div className="flex items-center w-full rounded-xl px-4 bg-gray-50 dark:bg-gray-800/60 shadow-[0_0_0_1px] shadow-gray-200 dark:shadow-gray-700/50">
+        {/* Token selector */}
+        {showTokenSelector && (
+          <button
+            type="button"
+            onClick={() => setIsTokenDropdownOpen(!isTokenDropdownOpen)}
+            className="flex items-center gap-2 pr-3 mr-3 border-r"
+          >
+            {getTokenIcon()}
+            <span className="font-medium">{getCurrentSymbol()}</span>
+            <ChevronDown size={16} />
+          </button>
         )}
         
         {/* Input field */}
         <input
           type="text"
           value={value}
-          onChange={handleInputChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          disabled={disabled}
-          className={cn(
-            'w-full outline-none bg-transparent',
-            'placeholder:text-gray-400 dark:placeholder:text-gray-500',
-            'text-gray-900 dark:text-gray-100',
-            'font-medium',
-            inputSizeClasses[size],
-            inputClassName
-          )}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="0.0"
+          className="w-full outline-none bg-transparent text-xl font-medium"
         />
-        
-        {/* Token symbol */}
-        {tokenSymbol && (
-          <div className="ml-2 text-gray-500 dark:text-gray-400 font-medium">
-            {tokenSymbol}
-          </div>
-        )}
         
         {/* MAX button */}
         {showMaxButton && balance && (
           <button
-            onClick={handleMaxClick}
-            disabled={disabled}
-            className={cn(
-              'ml-2 flex items-center gap-1 px-2 py-1 rounded-md text-xs',
-              'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
-              'hover:bg-gray-200 dark:hover:bg-gray-600',
-              'transition-colors',
-              'font-medium',
-              disabled && 'cursor-not-allowed opacity-50'
-            )}
+            onClick={() => onChange(balance)}
+            className="ml-3 flex items-center gap-1 px-2.5 py-1 rounded-md text-xs bg-white/80 dark:bg-gray-700/50"
           >
             <MaximizeIcon size={12} />
             <span>MAX</span>
           </button>
         )}
       </div>
-      
-      {/* Error message */}
-      {error && (
-        <div className="mt-1 text-xs text-red-500">
-          {error}
-        </div>
-      )}
     </div>
   );
 };
@@ -327,7 +345,31 @@ export default TokenInput;`;
       code: "import { TokenInput } from '@/components/tokeninput';",
     },
     {
-      title: 'Basic Usage',
+      title: 'With Token Selector (Blockchain Query)',
+      code: `const [value, setValue] = useState('');
+
+// Example token addresses
+const tokenAddresses = [
+  '0x2::sui::SUI',  // SUI token
+  '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::CETUS'
+];
+
+const handleTokenSelect = (tokenAddress, tokenInfo) => {
+  // Handle token selection if needed
+  console.log('Selected token:', tokenInfo.symbol);
+};
+
+<TokenInput 
+  value={value}
+  onChange={setValue}
+  showTokenSelector={true}
+  tokenAddresses={tokenAddresses}
+  onTokenSelect={handleTokenSelect}
+  showRefreshButton={true}
+/>`,
+    },
+    {
+      title: 'With Percentage Options',
       code: `const [value, setValue] = useState('');
 
 <TokenInput 
@@ -335,25 +377,52 @@ export default TokenInput;`;
   onChange={setValue}
   tokenSymbol="SUI"
   balance="1000.5"
+  // Add percentage options (25%, 50%, 75%, 100%)
+  percentageOptions={[25, 50, 75, 100]}
+  showRefreshButton={true}
 />`,
     },
     {
-      title: 'With Custom Max Button Handler',
+      title: 'With Fixed Amount Options',
       code: `const [value, setValue] = useState('');
-const balance = "1250.75";
 
-const handleMaxClick = () => {
-  // You can apply custom logic here, like subtracting gas fees
-  const maxValue = parseFloat(balance) - 0.01;
-  setValue(maxValue.toString());
+// Example predefined tokens with data already provided
+const predefinedTokens = [
+  {
+    address: '0x2::sui::SUI',
+    symbol: 'SUI',
+    name: 'Sui',
+    decimals: 9,
+    iconUrl: 'https://example.com/sui-icon.png',
+    balance: '2500.75'
+  },
+  {
+    address: '0xDEMO::token::BTC',
+    symbol: 'BTC',
+    name: 'Bitcoin',
+    decimals: 8,
+    iconUrl: 'https://example.com/btc-icon.png',
+    balance: '0.05'
+  }
+];
+
+// Refresh balance function
+const refreshBalance = async () => {
+  console.log('Refreshing balance...');
+  // Simulate or implement actual balance refresh
+  return new Promise(resolve => setTimeout(resolve, 1000));
 };
 
 <TokenInput 
   value={value}
   onChange={setValue}
-  tokenSymbol="SUI"
-  balance={balance}
-  onMaxClick={handleMaxClick}
+  showTokenSelector={true}
+  tokens={predefinedTokens}
+  selectedTokenAddress={predefinedTokens[0].address}
+  // Add fixed amount options
+  fixedAmountOptions={["0.1", "1", "10", "100"]}
+  showRefreshButton={true}
+  onRefreshBalance={refreshBalance}
 />`,
     },
   ];
@@ -369,14 +438,16 @@ const handleMaxClick = () => {
     { name: 'showBalance', type: 'boolean', description: 'Whether to show the balance display' },
     { name: 'showMaxButton', type: 'boolean', description: 'Whether to show the MAX button' },
     { name: 'placeholder', type: 'string', description: 'Placeholder text when input is empty' },
-    { name: 'disabled', type: 'boolean', description: 'Whether the input is disabled' },
     { name: 'error', type: 'string', description: 'Error message to display' },
     { name: 'size', type: '"sm" | "md" | "lg"', description: 'Size of the input component' },
-    { name: 'className', type: 'string', description: 'Additional CSS class for the container' },
-    { name: 'inputClassName', type: 'string', description: 'Additional CSS class for the input element' },
-    { name: 'onMaxClick', type: '() => void', description: 'Custom handler for MAX button click' },
-    { name: 'onFocus', type: '() => void', description: 'Handler for input focus event' },
-    { name: 'onBlur', type: '() => void', description: 'Handler for input blur event' },
+    { name: 'showTokenSelector', type: 'boolean', description: 'Whether to show the token selector dropdown' },
+    { name: 'tokenAddresses', type: 'string[]', description: 'Array of token addresses to fetch from blockchain' },
+    { name: 'tokens', type: 'TokenInfo[]', description: 'Array of predefined token data objects to use instead of fetching from blockchain' },
+    { name: 'onTokenSelect', type: '(address: string, tokenInfo: TokenInfo) => void', description: 'Callback when a token is selected' },
+    { name: 'showRefreshButton', type: 'boolean', description: 'Whether to show the refresh balance button' },
+    { name: 'percentageOptions', type: 'number[]', description: 'Array of percentage options (e.g., [25, 50, 75, 100]) to display as shortcut buttons' },
+    { name: 'fixedAmountOptions', type: 'string[]', description: 'Array of fixed amount options (e.g., ["0.1", "1", "10"]) to display as shortcut buttons' },
+    { name: 'onRefreshBalance', type: '() => Promise<void> | void', description: 'Callback when refresh balance button is clicked' },
   ];
 
   const tokenIconExample = <CoinsIcon className="text-yellow-500" size={24} />;
@@ -386,7 +457,7 @@ const handleMaxClick = () => {
       <span className="text-4xl font-semibold pl-1">Token Input Component</span>
       <div>
         <p className="sm:text-base mt-4 pl-1 text-gray-400">
-          A customizable input component for token amounts with support for balance display and MAX button.
+          A customizable input component for token amounts with token selection dropdown, balance display and MAX button.
           Designed to match the Sui design language.
         </p>
       </div>
@@ -497,102 +568,73 @@ const handleMaxClick = () => {
                 backgroundSize: '10px 10px',
               }}>
                 <QueryClientProvider client={queryClient}>
-                  <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-                    <div className={darkMode ? "dark" : ""}>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Basic Example */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-4 text-white">Basic Token Input</h3>
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue1} 
-                              onChange={setInputValue1}
-                              tokenSymbol="SUI"
-                              balance="1000.5"
-                            />
+                  <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
+                    <WalletProvider
+                      slushWallet={{
+                        name: 'suiflow-ui',
+                      }}
+                    >
+                      <div className={darkMode ? "dark" : ""}>
+                        <div className="grid grid-cols-1 gap-8">
+                          {/* With Blockchain-Queried Token Selector */}
+                          <div>
+                            <h3 className="text-sm font-medium mb-4 text-white">With Blockchain-Queried Token Selector</h3>
+                            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                              <TokenInput 
+                                value={inputValue2} 
+                                onChange={setInputValue2}
+                                tokenAddresses={tokenAddresses}
+                                showTokenSelector={true}
+                                onTokenSelect={handleTokenSelect}
+                                showRefreshButton={true}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        
-                        {/* With Token Icon */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-4 text-white">With Token Icon</h3>
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue2} 
-                              onChange={setInputValue2}
-                              tokenSymbol="SUI"
-                              tokenIcon={tokenIconExample}
-                              balance="1000.5"
-                            />
+
+                          {/* With Percentage Options */}
+                          <div>
+                            <h3 className="text-sm font-medium mb-4 text-white">With Percentage Options</h3>
+                            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                              <TokenInput 
+                                value={inputValue4} 
+                                onChange={setInputValue4}
+                                tokens={predefinedTokens}
+                                selectedTokenAddress={predefinedTokens[0].address}
+                                showTokenSelector={true}
+                                percentageOptions={[25, 50, 75, 100]}
+                                showRefreshButton={true}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        
-                        {/* With Error State */}
-                        <div>
-                          <h3 className="text-sm font-medium mb-4 text-white">With Error State</h3>
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue3} 
-                              onChange={setInputValue3}
-                              tokenSymbol="SUI"
-                              balance="1000.5"
-                              error="Insufficient balance"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Different Sizes */}
-                      <div className="mt-8">
-                        <h3 className="text-sm font-medium mb-4 text-white">Different Sizes</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue4}
-                              onChange={setInputValue4}
-                              tokenSymbol="SUI"
-                              balance="1000.5"
-                              size="sm"
-                            />
-                            <div className="mt-2 text-xs text-center text-white">Small</div>
-                          </div>
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue4}
-                              onChange={setInputValue4}
-                              tokenSymbol="SUI"
-                              balance="1000.5"
-                              size="md"
-                            />
-                            <div className="mt-2 text-xs text-center text-white">Medium</div>
-                          </div>
-                          <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                            <TokenInput 
-                              value={inputValue4}
-                              onChange={setInputValue4}
-                              tokenSymbol="SUI"
-                              balance="1000.5"
-                              size="lg"
-                            />
-                            <div className="mt-2 text-xs text-center text-white">Large</div>
+
+                          {/* With Fixed Amount Options */}
+                          <div>
+                            <h3 className="text-sm font-medium mb-4 text-white">With Fixed Amount Options</h3>
+                            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                              <TokenInput 
+                                value={inputValue4} 
+                                onChange={setInputValue4}
+                                tokens={predefinedTokens}
+                                selectedTokenAddress={predefinedTokens[0].address}
+                                showTokenSelector={true}
+                                fixedAmountOptions={["0.1", "1", "10", "100"]}
+                                showRefreshButton={true}
+                                onRefreshBalance={() => {
+                                  console.log("Refreshing balance...");
+                                  // Simulate balance refresh
+                                  return new Promise((resolve) => {
+                                    setTimeout(() => {
+                                      console.log("Balance refreshed");
+                                      resolve();
+                                    }, 1000);
+                                  });
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Disabled State */}
-                      <div className="mt-8">
-                        <h3 className="text-sm font-medium mb-4 text-white">Disabled State</h3>
-                        <div className="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg">
-                          <TokenInput 
-                            value="100"
-                            onChange={() => {}}
-                            tokenSymbol="SUI"
-                            balance="1000.5"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    </WalletProvider>
                   </SuiClientProvider>
                 </QueryClientProvider>
               </div>

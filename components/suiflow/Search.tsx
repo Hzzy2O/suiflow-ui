@@ -27,7 +27,7 @@ function Search() {
           placeholder="Press / to search"
           disabled
           className="placeholder-[#ABAFB4] w-10 bg-transparent outline-none flex-grow pl-10 pr-10 py-2 rounded-full text-sm"
-          aria-label="Search components including Address Display, Balance Display, Connect Button, Connect Modal, NFT Card, Object Display, Token Input, Transaction Notifier, and Transaction History"
+          aria-label="Search components including Address Display, Balance Display, Connect Button, Connect Modal, NFT Card, Token Input, Transaction Notifier, and Transaction History"
         />
 
         {/* Modern Backslash Icon */}

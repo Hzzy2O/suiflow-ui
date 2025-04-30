@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { CgComponents } from "react-icons/cg";
 import { GeistSans } from 'geist/font/sans';
 
 
@@ -11,10 +10,10 @@ const componentsList = [
   { name: 'Address Display', url: '/components/addressdisplay', subComponents: [] },
   { name: 'Balance Display', url: '/components/balancedisplay', subComponents: [] },
   { name: 'Connect Button', url: '/components/connect-button', subComponents: [] },
-  { name: 'Connect Modal', url: '/components/connect-modal', subComponents: [] },
+  { name: 'Connect Modal', url: '/components/connect-wallet-modal', subComponents: [] },
+  { name: 'Connector', url: '/components/connector', subComponents: [] },
   { name: 'NFT Card', url: '/components/nftcard', subComponents: [] },
   { name: 'NFT Gallery', url: '/components/nftgallery', subComponents: [] },
-  { name: 'Object Display', url: '/components/objectdisplay', subComponents: [] },
   { name: 'Token Input', url: '/components/tokeninput', subComponents: [] },
   { name: 'Transaction Notifier', url: '/components/transaction-notifier', subComponents: [] },
   { name: 'Transaction History', url: '/components/transaction-history', subComponents: [] },
