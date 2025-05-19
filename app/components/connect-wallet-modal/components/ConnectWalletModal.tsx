@@ -271,7 +271,7 @@ export const ConnectWalletModal = ({
 
   const renderInfoColumn = () => (
     <div className="p-6 flex flex-col h-full">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">What is a Wallet?</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">&quot;What is a Wallet?&quot;</h3>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 flex-grow">
         A wallet is a secure digital tool for managing your blockchain assets (like SUI or NFTs) and interacting with decentralized applications (dApps).
       </p>

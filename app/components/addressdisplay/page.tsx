@@ -523,7 +523,7 @@ export default function MyComponent() {
       <span className="text-4xl font-semibold pl-1">Address Display Component</span>
       <div>
         <p className="sm:text-base mt-4 pl-1 text-gray-400">
-          A versatile component for displaying blockchain addresses with different formatting options,
+          A versatile component for displaying sui blockchain addresses with different formatting options,
           copy functionality, and Sui Explorer links. Perfect for wallets, NFT details, and transaction interfaces.
         </p>
       </div>
@@ -736,12 +736,12 @@ export default function MyComponent() {
           <div className="absolute sm:ml-3">
             <pre className="bg-[#0A1428] p-3 rounded-md overflow-auto text-sm sm:text-base w-[350px] sm:w-[600px] border border-[#2A3746]">
               <code className="text-zinc-300">
-                npx @suiflow-ui@latest add addressdisplay
+                npx @suiflow/ui@latest add addressdisplay
               </code>
             </pre>
             <button
               onClick={() =>
-                copyToClipboard('npx @suiflow-ui@latest add addressdisplay', 1)
+                copyToClipboard('npx @suiflow/ui@latest add addressdisplay', 1)
               }
               className="absolute right-0 top-2 p-2 w-10 h-auto bg-[#0A1428] rounded border-r border-[#2A3746]"
               aria-label="Copy command"

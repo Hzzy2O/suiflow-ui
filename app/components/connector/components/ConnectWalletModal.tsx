@@ -157,7 +157,7 @@ const ConnectWalletModal = ({
   const renderWalletList = () => (
     <>
       <div className="flex items-center justify-between border-b border-[#1E3A8A]/20 px-6 py-4">
-        <h3 className="text-xl font-semibold text-white">连接钱包</h3>
+        <h3 className="text-xl font-semibold text-white">Connect Wallet</h3>
         <button
           type="button"
           className="rounded-full p-1 text-gray-400 hover:bg-[#1E3A8A]/10 hover:text-white"
@@ -166,13 +166,13 @@ const ConnectWalletModal = ({
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-          <span className="sr-only">关闭</span>
+          <span className="sr-only">Close</span>
         </button>
       </div>
 
       <div className="p-6">
         <p className="mb-4 text-sm text-gray-300">
-          选择您喜欢的钱包连接到此应用程序。
+          Select your preferred wallet to connect to this application.
         </p>
         
         <div className="space-y-3">
@@ -200,7 +200,7 @@ const ConnectWalletModal = ({
           className="text-sm text-[#3890E3] hover:text-[#4A90E2] w-full text-center"
           onClick={() => setCurrentView('what-is-wallet')}
         >
-          什么是钱包？
+          What is a wallet?
         </button>
       </div>
     </>
@@ -210,22 +210,22 @@ const ConnectWalletModal = ({
   const renderWhatIsWallet = () => (
     <>
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">什么是钱包？</h3>
+        <h3 className="text-xl font-semibold text-white mb-4">What is a wallet?</h3>
         <p className="text-sm text-gray-300 mb-4">
-          区块链钱包是一个数字工具，使您能够与区块链网络进行交互。它存储您的数字资产（如加密货币或NFT）的私钥，并允许您发送、接收和管理这些资产。
+          A blockchain wallet is a digital tool that enables you to interact with blockchain networks. It stores the private keys for your digital assets (such as cryptocurrencies or NFTs) and allows you to send, receive, and manage these assets.
         </p>
         
-        <h4 className="text-lg font-medium text-white mb-2">钱包的主要功能：</h4>
+        <h4 className="text-lg font-medium text-white mb-2">Main functions of a wallet:</h4>
         <ul className="list-disc list-inside text-sm text-gray-300 space-y-1 mb-4">
-          <li>保护您的数字资产</li>
-          <li>发送和接收加密货币和其他数字资产</li>
-          <li>与去中心化应用（DApps）交互</li>
-          <li>查看您的交易历史</li>
-          <li>管理您的数字身份</li>
+          <li>Protect your digital assets</li>
+          <li>Send and receive cryptocurrencies and other digital assets</li>
+          <li>Interact with decentralized applications (DApps)</li>
+          <li>View your transaction history</li>
+          <li>Manage your digital identity</li>
         </ul>
         
         <p className="text-sm text-gray-300">
-          钱包可以采取多种形式，包括浏览器扩展、移动应用程序或硬件设备。选择适合您需求的钱包类型非常重要。
+          Wallets can take many forms, including browser extensions, mobile apps, or hardware devices. It is important to choose the type of wallet that best suits your needs.
         </p>
       </div>
       
@@ -234,7 +234,7 @@ const ConnectWalletModal = ({
           className="w-full rounded-md bg-[#3890E3] py-2 text-white hover:bg-[#4A90E2] transition-colors"
           onClick={() => setCurrentView('getting-started')}
         >
-          如何开始使用钱包
+          How to get started with a wallet
         </button>
       </div>
     </>
@@ -244,34 +244,34 @@ const ConnectWalletModal = ({
   const renderGettingStarted = () => (
     <>
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">开始使用钱包</h3>
+        <h3 className="text-xl font-semibold text-white mb-4">Getting Started with a Wallet</h3>
         
         <div className="space-y-4">
           <div className="rounded-lg border border-[#1E3A8A]/20 p-4">
-            <h4 className="text-lg font-medium text-white mb-2">1. 选择一个钱包</h4>
+            <h4 className="text-lg font-medium text-white mb-2">1. Choose a wallet</h4>
             <p className="text-sm text-gray-300">
-              为Sui区块链选择一个兼容的钱包，如Sui钱包、Ethos或Suiet。
+              Choose a compatible wallet for the Sui blockchain, such as Sui Wallet, Ethos, or Suiet.
             </p>
           </div>
           
           <div className="rounded-lg border border-[#1E3A8A]/20 p-4">
-            <h4 className="text-lg font-medium text-white mb-2">2. 安装钱包</h4>
+            <h4 className="text-lg font-medium text-white mb-2">2. Install the wallet</h4>
             <p className="text-sm text-gray-300">
-              从官方网站或应用商店下载并安装您选择的钱包。
+              Download and install your chosen wallet from the official website or app store.
             </p>
           </div>
           
           <div className="rounded-lg border border-[#1E3A8A]/20 p-4">
-            <h4 className="text-lg font-medium text-white mb-2">3. 创建或导入钱包</h4>
+            <h4 className="text-lg font-medium text-white mb-2">3. Create or import a wallet</h4>
             <p className="text-sm text-gray-300">
-              按照应用程序的指导创建新钱包或使用恢复短语导入现有钱包。
+              Follow the app instructions to create a new wallet or import an existing one using a recovery phrase.
             </p>
           </div>
           
           <div className="rounded-lg border border-[#1E3A8A]/20 p-4">
-            <h4 className="text-lg font-medium text-white mb-2">4. 连接到应用</h4>
+            <h4 className="text-lg font-medium text-white mb-2">4. Connect to the app</h4>
             <p className="text-sm text-gray-300">
-              返回此应用并点击"连接钱包"按钮，然后选择您的钱包。
+              Return to this app and click the &quot;Connect Wallet&quot; button, then select your wallet.
             </p>
           </div>
         </div>
@@ -282,7 +282,7 @@ const ConnectWalletModal = ({
           className="w-full rounded-md bg-[#3890E3] py-2 text-white hover:bg-[#4A90E2] transition-colors"
           onClick={() => setCurrentView('wallet-list')}
         >
-          返回钱包列表
+          Back to wallet list
         </button>
       </div>
     </>
@@ -305,10 +305,10 @@ const ConnectWalletModal = ({
           <>
             <div className="my-6 h-8 w-8 animate-spin rounded-full border-2 border-[#3890E3] border-t-transparent"></div>
             <p className="text-sm text-gray-300">
-              正在连接到 {selectedWallet.name}...
+              Connecting to {selectedWallet.name}...
             </p>
             <p className="mt-2 text-xs text-gray-400">
-              请在{selectedWallet.name}中批准连接请求
+              Please approve the connection request in {selectedWallet.name}
             </p>
           </>
         )}
@@ -321,7 +321,7 @@ const ConnectWalletModal = ({
               </svg>
             </div>
             <p className="text-sm text-gray-300">
-              已成功连接到 {selectedWallet.name}!
+              Successfully connected to {selectedWallet.name}!
             </p>
           </>
         )}
@@ -334,13 +334,13 @@ const ConnectWalletModal = ({
               </svg>
             </div>
             <p className="text-sm text-gray-300 mb-4">
-              连接 {selectedWallet.name} 失败
+              Failed to connect to {selectedWallet.name}
             </p>
             <button 
               className="w-full rounded-md bg-[#3890E3] py-2 text-white hover:bg-[#4A90E2] transition-colors"
               onClick={handleRetryConnection}
             >
-              重试
+              Retry
             </button>
           </>
         )}
@@ -398,7 +398,7 @@ const ConnectWalletModal = ({
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="sr-only">返回</span>
+            <span className="sr-only">Back</span>
           </button>
         )}
         
@@ -412,7 +412,7 @@ const ConnectWalletModal = ({
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <span className="sr-only">关闭</span>
+            <span className="sr-only">Close</span>
           </button>
         )}
         

@@ -19,12 +19,12 @@ const steps: Step[] = [
   {
     title: "Initialize Your Project",
     description: "Start by setting up your project with SuiFlow UI. Run the following command in your terminal:",
-    code: "npx @suiflow-ui@latest init",
+    code: "npx @suiflow/ui@latest init",
   },
   {
     title: "Add Components",
     description: "Now that your project is ready, you can start adding components. To add a specific component, use:",
-    code: `npx @suiflow-ui@latest add [componentname]`,
+    code: `npx @suiflow/ui@latest add [componentname]`,
   },
   {
     title: "Use the Component",
@@ -46,7 +46,7 @@ export default Page;`,
   {
     title: "Explore Available Components",
     description: "To see a list of all available components, run:",
-    code: `npx @suiflow-ui@latest add`,
+    code: `npx @suiflow/ui@latest add`,
   },
   {
     title: "Select and Add Components",

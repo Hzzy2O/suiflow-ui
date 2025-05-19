@@ -643,12 +643,12 @@ export default TransactionHistoryList;`;
         <div className="sm:ml-3 relative max-w-[600px]">
           <pre className="bg-[#0A1428] p-3 rounded-md overflow-auto text-sm sm:text-base w-full sm:w-[600px] border border-[#2A3746]">
             <code className="text-zinc-300">
-              npx @suiflow-ui@latest add transaction-history
+              npx @suiflow/ui@latest add transaction-history
             </code>
           </pre>
           <button
             onClick={() =>
-              copyToClipboard('npx @suiflow-ui@latest add transaction-history', 1)
+              copyToClipboard('npx @suiflow/ui@latest add transaction-history', 1)
             }
             className="absolute right-0 top-2 p-2 w-10 h-auto bg-[#0A1428] rounded border-r border-[#2A3746]"
             aria-label="Copy command"

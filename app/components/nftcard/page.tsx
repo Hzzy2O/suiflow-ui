@@ -264,6 +264,7 @@ const NFTCard = ({
 }: NFTCardProps) => {
   // State management
   const [showAttributes, setShowAttributes] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true); // State for image loading status
 
   // Map sizes to specific dimensions
   const sizeClasses = {
@@ -482,17 +483,28 @@ const NFTCard = ({
       onClick={onClick}
     >
       <div className="relative aspect-square overflow-hidden">
-        <div className="relative w-full h-full">
+        {/* Image container with conditional placeholder styles */}
+        <div className={cn(
+          "relative w-full h-full",
+          isImageLoading && "bg-gray-200 dark:bg-gray-700 animate-pulse" // Placeholder style while loading
+        )}>
           <Image
             src={displayImageUrl}
-            alt={displayName}
-            className="object-cover"
+            alt={displayName || 'NFT Image'} // Provide a default alt text
+            className={cn(
+              "object-cover w-full h-full",
+              // Apply transition for smooth fade-in
+              "transition-opacity duration-300 ease-in-out",
+              isImageLoading ? "opacity-0" : "opacity-100" // Hide image while loading, show when loaded
+            )}
             width={500}
             height={500}
             unoptimized={displayImageUrl?.startsWith(
               'https://images.placeholders.dev'
             )}
+            onLoad={() => setIsImageLoading(false)} // Set loading state to false when image loads
             onError={(e) => {
+              setIsImageLoading(false); // Also stop loading state on error
               // Show placeholder when image fails to load
               const target = e.target as HTMLImageElement;
               target.src =
@@ -977,12 +989,12 @@ export default function MyComponent() {
           <div className="absolute sm:ml-3">
             <pre className="bg-[#0A1428] p-3 rounded-md overflow-auto text-sm sm:text-base w-[350px] sm:w-[600px] border border-[#2A3746]">
               <code className="text-zinc-300">
-                npx @suiflow-ui@latest add nftcard
+                npx @suiflow/ui@latest add nftcard
               </code>
             </pre>
             <button
               onClick={() =>
-                copyToClipboard('npx @suiflow-ui@latest add nftcard', 1)
+                copyToClipboard('npx @suiflow/ui@latest add nftcard', 1)
               }
               className="absolute right-0 top-2 p-2 w-10 h-auto bg-[#0A1428] rounded border-r border-[#2A3746]"
               aria-label="Copy command"

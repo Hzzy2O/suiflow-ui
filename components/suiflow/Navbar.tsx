@@ -21,13 +21,6 @@ function Navbar() {
             </p>
         </Link>
 
-        <div className="items-center flex space-x-6 text-[#ABAFB4]">
-          <Link href="/components" passHref>
-            <span className="hover:text-[#6FBCF0] transition-colors duration-200 cursor-pointer hidden sm:flex ml-10 md:ml-0">
-              Components
-            </span>
-          </Link>
-        </div>
       </span>
       <div className="flex justify-center items-center gap-1">
         {/* Searchbar */}

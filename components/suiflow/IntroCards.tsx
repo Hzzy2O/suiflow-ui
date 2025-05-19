@@ -31,7 +31,7 @@ const SpotlightItem: React.FC<CardData> = ({ title, description }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative w-80 rounded-3xl border border-neutral-800 bg-black/80 md:bg-black/50 backdrop-blur p-8 sm:p-7"
+      className="relative w-full rounded-3xl border border-neutral-800 bg-black/80 md:bg-black/50 backdrop-blur p-8 sm:p-7 flex flex-col"
     >
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-3xl"
@@ -54,7 +54,7 @@ const SpotlightItem: React.FC<CardData> = ({ title, description }) => {
 
 const IntroCards: React.FC<SpotlightCardProps> = ({ cards }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-center gap-5">
+    <div className="flex flex-col items-center gap-5">
       {cards.map((card, index) => (
         <SpotlightItem
           key={index}

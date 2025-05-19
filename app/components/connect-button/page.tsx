@@ -856,12 +856,12 @@ export default function App() {
           <div className="absolute sm:ml-3">
             <pre className="bg-[#0A1428] p-3 rounded-md overflow-auto text-sm sm:text-base w-[350px] sm:w-[600px] border border-[#2A3746]">
               <code className="text-zinc-300">
-                npx @suiflow-ui@latest add connect-wallet
+                npx @suiflow/ui@latest add connect-wallet
               </code>
             </pre>
             <button
               onClick={() =>
-                copyToClipboard('npx @suiflow-ui@latest add connect-wallet', 1)
+                copyToClipboard('npx @suiflow/ui@latest add connect-wallet', 1)
               }
               className="absolute right-0 top-2 p-2 w-10 h-auto bg-[#0A1428] rounded border-r border-[#2A3746]"
               aria-label="Copy command"

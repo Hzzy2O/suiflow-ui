@@ -1,0 +1,36 @@
+{
+  "name": "@suiflow/ui",
+  "version": "1.1.0",
+  "description": "A CLI tool for integrating SuiFlow UI components into your Next.js projects.",
+  "bin": {
+    "@suiflow/ui": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@types/node": "^20.0.0",
+    "commander": "^9.0.0",
+    "fs-jetpack": "^2.0.0",
+    "inquirer": "^8.0.0"
+  },
+  "type": "module",
+  "author": "Hzzy2O",
+  "license": "MIT",
+  "keywords": [
+    "Next.js",
+    "Sui",
+    "SuiFlow UI",
+    "CLI tool",
+    "Component library",
+    "Tailwind CSS",
+    "TypeScript",
+    "Framer Motion",
+    "React components",
+    "UI components",
+    "Open-source"
+  ],
+  "devDependencies": {
+    "@types/lodash": "^4.17.7"
+  }
+}

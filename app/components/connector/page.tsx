@@ -577,7 +577,7 @@ export default function App() {
   ];
 
   // Installation command (assuming the user needs the base button/modal components if not already present)
-  const installCommand = 'npx @suiflow-ui@latest add connector';
+  const installCommand = 'npx @suiflow/ui@latest add connector';
 
   // Mount effect
   useEffect(() => {

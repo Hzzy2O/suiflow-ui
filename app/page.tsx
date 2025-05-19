@@ -5,6 +5,7 @@ import TechUsed from "@/components/suiflow/TechUsed";
 import HomeNav from "@/components/suiflow/HomeNav";
 import { Inter } from "next/font/google";
 import { Spotlight } from "@/components/ui/spotlight";
+import Image from 'next/image';
 
 // Use Inter font with multiple weights for better typography hierarchy
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
@@ -50,9 +51,9 @@ function Home() {
             </div>
 
             <div className="w-full lg:w-1/1 lg:h-[400px] mt-10 lg:mt-0 flex justify-center">
-              <div className="w-44 h-44 md:w-80 md:h-80 items-center justify-center text-white hidden lg:flex bg-gradient-to-br from-[#3890E3] to-[#40BFCF] rounded-2xl shadow-lg">
-                  <span className="sui-loader"></span>
-                </div>
+              <div className="w-44 h-44 md:w-80 md:h-80 items-center justify-center text-white hidden lg:flex bg-gradient-to-br from-[#3890E3] to-[#40BFCF] rounded-2xl shadow-lg overflow-hidden">
+                <Image src="/image/preview.jpg" alt="Preview" width={320} height={320} className="object-cover w-full h-full"/>
+              </div>
             </div>
           </div>
 
